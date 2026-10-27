@@ -14,6 +14,63 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
     
     <style>
+        /* ==========================================================================
+           Custom Repository Fonts (@font-face)
+           ========================================================================== */
+        @font-face {
+            font-family: 'Warren';
+            src: local('WARREN Regular'), local('WARRENRegular'),
+                 url('WARREN.ttf') format('truetype'),
+                 url('WARREN.otf') format('opentype'),
+                 url('WARREN-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Evantic';
+            src: local('Evantic Regular'), local('Evantic-Regular'),
+                 url('Evantic-Regular.ttf') format('truetype'),
+                 url('Evantic-Regular.otf') format('opentype'),
+                 url('Evantic.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Evantic';
+            src: local('Evantic Italic'), local('Evantic-Italic'),
+                 url('Evantic-Italic.ttf') format('truetype'),
+                 url('Evantic-Italic.otf') format('opentype');
+            font-weight: 400;
+            font-style: italic;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Stora';
+            src: local('Stora Regular'), local('StoraRegular'),
+                 url('Stora-Regular.ttf') format('truetype'),
+                 url('Stora-Regular.otf') format('opentype'),
+                 url('Stora.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Stora Light';
+            src: local('Stora Light'), local('StoraLight'),
+                 url('Stora-Light.ttf') format('truetype'),
+                 url('Stora-Light.otf') format('opentype'),
+                 url('StoraLight.ttf') format('truetype');
+            font-weight: 300;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --ink-black: #001414;
             --jet-black: #002729;
@@ -21,34 +78,34 @@
             --strong-cyan: #00d9e0;
             --azure-mist: #ebfeff;
 
-            /* Active Theme Variables (Default: Dark) */
+            /* Typography Hierarchy Variables */
+            --font-display: 'Stora', 'Warren', 'DM Sans', sans-serif;
+            --font-label: 'Warren', 'Stora Light', 'DM Sans', sans-serif;
+            --font-sans: 'Evantic', 'DM Sans', sans-serif;
+            --font-light: 'Stora Light', 'Evantic', 'DM Sans', sans-serif;
+
+            /* Dark Mode Theme Variables */
             --bg-main: var(--ink-black);
             --text-main: var(--azure-mist);
-            --text-muted: rgba(235, 254, 255, 0.6);
-            --card-bg: rgba(0, 39, 41, 0.55);
-            --panel-bg: rgba(0, 39, 41, 0.45);
+            --text-muted: rgba(235, 254, 255, 0.65);
+            --panel-bg: rgba(0, 20, 20, 0.45);
             --select-bg: rgba(0, 20, 20, 0.65);
-            --border-color: rgba(0, 99, 102, 0.45);
+            --border-color: rgba(235, 254, 255, 0.16);
             --accent-primary: var(--strong-cyan);
             --accent-secondary: var(--stormy-teal);
-            --pill-bg: rgba(0, 39, 41, 0.8);
-            --glow-opacity: 0.22;
-            --grain-opacity: 0.45;
+            --pill-bg: rgba(0, 20, 20, 0.55);
         }
 
         body.light-mode {
             --bg-main: var(--azure-mist);
             --text-main: var(--ink-black);
             --text-muted: rgba(0, 20, 20, 0.65);
-            --card-bg: rgba(235, 254, 255, 0.65);
-            --panel-bg: rgba(255, 255, 255, 0.55);
-            --select-bg: rgba(235, 254, 255, 0.9);
-            --border-color: rgba(0, 99, 102, 0.3);
-            --accent-primary: var(--stormy-teal);
-            --accent-secondary: var(--strong-cyan);
-            --pill-bg: rgba(255, 255, 255, 0.85);
-            --glow-opacity: 0.35;
-            --grain-opacity: 0.3;
+            --panel-bg: rgba(235, 254, 255, 0.52);
+            --select-bg: rgba(235, 254, 255, 0.82);
+            --border-color: rgba(0, 99, 102, 0.28);
+            --accent-primary: var(--ink-black);
+            --accent-secondary: var(--stormy-teal);
+            --pill-bg: rgba(235, 254, 255, 0.75);
         }
 
         * {
@@ -56,65 +113,69 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            font-family: 'DM Sans', sans-serif;
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
             background-color: var(--bg-main);
             color: var(--text-main);
-            min-height: 100dvh;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Ambient Mesh & Grain Background */
-        .ambient-canvas {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: 
-                radial-gradient(circle at 15% 15%, var(--strong-cyan) 0%, transparent 45%),
-                radial-gradient(circle at 85% 80%, var(--stormy-teal) 0%, transparent 55%),
-                radial-gradient(circle at 50% 50%, var(--jet-black) 0%, var(--bg-main) 100%);
-            opacity: var(--glow-opacity);
-            transition: opacity 0.3s ease;
-        }
-
-        .grain-overlay {
+        /* ==========================================================================
+           Custom Grain Gradient Background Images
+           ========================================================================== */
+        .grain-gradient-stage {
             position: fixed;
             inset: 0;
             z-index: -1;
-            opacity: var(--grain-opacity);
-            pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            mix-blend-mode: overlay;
+            background-image: url('grain_gradient_2.jfif');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 0.3s ease;
         }
 
-        /* Responsive Full-Screen Mobile Container */
-        .app-container {
+        body.light-mode .grain-gradient-stage {
+            background-image: url('grain_gradient_1.jfif');
+        }
+
+        /* ==========================================================================
+           iPhone Safe-Area Full-Screen Layout
+           ========================================================================== */
+        .app-shell {
             width: 100%;
-            min-height: 100dvh;
-            background: var(--card-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            padding-top: calc(env(safe-area-inset-top, 20px) + 1.25rem);
+            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 1.25rem);
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
             position: relative;
-            overflow: hidden;
-            transition: background 0.3s ease, border-color 0.3s ease;
         }
 
         @media (min-width: 640px) {
-            .app-container {
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .app-shell {
                 max-width: 410px;
-                min-height: 780px;
-                height: auto;
-                border-radius: 2.5rem;
+                height: 812px;
+                max-height: 92dvh;
+                padding: 2rem 1.75rem;
+                border-radius: 2.75rem;
+                background: rgba(0, 20, 20, 0.25);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
                 border: 1px solid var(--border-color);
-                box-shadow: 0 25px 50px -12px rgba(0, 20, 20, 0.7);
+                box-shadow: 0 25px 50px -12px rgba(0, 20, 20, 0.75);
             }
         }
 
@@ -122,17 +183,20 @@
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 1.5rem;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 12px 32px -8px rgba(0, 20, 20, 0.35);
             transition: background 0.3s ease, border-color 0.3s ease;
         }
 
         .icon-btn {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 2.75rem;
+            height: 2.75rem;
             border-radius: 9999px;
             border: 1px solid var(--border-color);
             background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             color: var(--text-main);
             display: flex;
             align-items: center;
@@ -141,13 +205,8 @@
             transition: all 0.2s ease;
         }
 
-        .icon-btn:hover {
-            border-color: var(--accent-primary);
-            transform: translateY(-1px);
-        }
-
         .icon-btn:active {
-            transform: translateY(0);
+            transform: scale(0.94);
         }
 
         .custom-select {
@@ -156,13 +215,14 @@
             background-color: var(--select-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            border-radius: 0.875rem;
-            padding: 0.65rem 1.75rem 0.65rem 0.75rem;
-            font-size: 0.9rem;
+            font-family: var(--font-sans);
+            border-radius: 0.95rem;
+            padding: 0.7rem 1.75rem 0.7rem 0.8rem;
+            font-size: 0.925rem;
             font-weight: 500;
             width: 100%;
             cursor: pointer;
-            transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+            transition: border-color 0.2s ease, background-color 0.3s ease;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300d9e0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 0.6rem center;
@@ -170,70 +230,86 @@
         }
 
         body.light-mode .custom-select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23006366'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23001414'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
         }
 
         .custom-select:focus {
             outline: none;
-            border-color: var(--accent-primary);
+            border-color: var(--strong-cyan);
         }
 
-        .tabular-nums {
+        /* Typographic Utility Classes */
+        .font-hero {
+            font-family: var(--font-display);
             font-variant-numeric: tabular-nums;
+        }
+
+        .font-micro-label {
+            font-family: var(--font-label);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .font-editorial-italic {
+            font-family: var(--font-sans);
+            font-style: italic;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .font-subtle {
+            font-family: var(--font-light);
         }
     </style>
 </head>
-<body class="p-0 sm:p-6">
+<body>
 
-    <div class="ambient-canvas"></div>
-    <div class="grain-overlay"></div>
+    <!-- Grain Gradient Stage (Image Backdrop) -->
+    <div class="grain-gradient-stage"></div>
 
-    <main class="app-container p-6 sm:p-7">
+    <main class="app-shell">
         
         <!-- Top Navigation -->
-        <header class="flex justify-between items-center z-10 pt-2">
+        <header class="flex justify-between items-center z-10">
             <!-- Top-Left: Light / Dark Theme Toggle -->
-            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Light/Dark Mode" title="Toggle Theme">
-                <!-- Sun Icon (shown in dark mode) -->
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Light/Dark Mode">
                 <svg id="icon-sun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
-                <!-- Moon Icon (shown in light mode) -->
                 <svg id="icon-moon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                 </svg>
             </button>
 
             <!-- Top-Right: Copy Stats Button -->
-            <button id="copy-btn" class="icon-btn" aria-label="Copy Stats" title="Copy Stats">
+            <button id="copy-btn" class="icon-btn" aria-label="Copy Stats">
                 <svg id="icon-copy" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                 </svg>
-                <svg id="icon-check" class="w-4 h-4 hidden" style="color: var(--accent-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg id="icon-check" class="w-4 h-4 hidden" style="color: var(--strong-cyan);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </button>
         </header>
 
-        <!-- Centerpiece Sol Counter & 80-Year Bar -->
-        <section class="flex flex-col items-center my-auto py-8 z-10">
-            <span class="text-xs font-semibold uppercase tracking-widest" style="color: var(--text-muted);">Sols</span>
+        <!-- Centerpiece Sol Counter & 80-Year Life Bar -->
+        <section class="flex flex-col items-center justify-center z-10 my-auto">
+            <span class="font-micro-label text-xs" style="color: var(--text-muted);">Sols</span>
             
-            <h1 id="sol-display" class="text-6xl sm:text-7xl font-bold mt-2 tracking-tight tabular-nums" style="color: var(--accent-primary);">
+            <h1 id="sol-display" class="font-hero text-6xl sm:text-7xl mt-1.5 tracking-tight" style="color: var(--accent-primary);">
                 0
             </h1>
             
-            <div class="mt-4 px-4 py-1.5 rounded-full border text-xs font-medium tracking-wide flex items-center gap-2" style="border-color: var(--border-color); background: var(--pill-bg);">
-                <span class="w-2 h-2 rounded-full" style="background-color: var(--accent-primary);"></span>
-                <span id="earth-years-display" class="tabular-nums">0.0 Earth Years</span>
+            <div class="mt-3.5 px-4 py-1.5 rounded-full border flex items-center gap-2" style="border-color: var(--border-color); background: var(--pill-bg); backdrop-filter: blur(8px);">
+                <span class="w-2 h-2 rounded-full" style="background-color: var(--strong-cyan);"></span>
+                <span id="earth-years-display" class="font-editorial-italic text-sm tracking-wide">0.0 Earth Years</span>
             </div>
 
             <!-- 80-Year Life Expectancy Progress Bar -->
-            <div class="w-full max-w-[280px] mt-8">
-                <div class="flex justify-between items-center text-xs font-medium mb-2" style="color: var(--text-muted);">
-                    <span>0 Yrs</span>
-                    <span id="life-percent-display" class="tabular-nums font-semibold" style="color: var(--text-main);">0.0%</span>
-                    <span>80 Yrs</span>
+            <div class="w-full max-w-[280px] mt-7">
+                <div class="flex justify-between items-baseline mb-2">
+                    <span class="font-subtle text-xs" style="color: var(--text-muted);">0 Yrs</span>
+                    <span id="life-percent-display" class="font-editorial-italic text-sm font-semibold" style="color: var(--text-main);">0.0%</span>
+                    <span class="font-subtle text-xs" style="color: var(--text-muted);">80 Yrs</span>
                 </div>
                 <div class="w-full h-2.5 rounded-full overflow-hidden p-0.5" style="background: var(--select-bg); border: 1px solid var(--border-color);">
                     <div id="life-bar-fill" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, var(--stormy-teal), var(--strong-cyan));"></div>
@@ -242,40 +318,37 @@
         </section>
 
         <!-- Bottom Controls & Secondary Metrics -->
-        <section class="flex flex-col gap-4 z-10 pb-2">
+        <section class="flex flex-col gap-3.5 z-10">
             <!-- 3-Way Date Selector Card -->
-            <div class="glass-panel p-5">
+            <div class="glass-panel p-4 sm:p-5">
                 <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-sm font-semibold tracking-wide">Start Date</h2>
-                    <span id="error-message" class="text-xs font-medium text-red-400 hidden">Date cannot be in the future</span>
+                    <h2 class="text-xs font-micro-label" style="color: var(--text-muted);">Start Date</h2>
+                    <span id="error-message" class="text-xs font-medium text-red-400 hidden">Future date invalid</span>
                 </div>
                 
-                <div class="grid grid-cols-12 gap-2.5">
-                    <!-- Month (Full Name) -->
+                <div class="grid grid-cols-12 gap-2">
                     <div class="col-span-5">
                         <select id="month-select" class="custom-select" aria-label="Month"></select>
                     </div>
-                    <!-- Day -->
                     <div class="col-span-3">
-                        <select id="day-select" class="custom-select tabular-nums" aria-label="Day"></select>
+                        <select id="day-select" class="custom-select" aria-label="Day"></select>
                     </div>
-                    <!-- Year -->
                     <div class="col-span-4">
-                        <select id="year-select" class="custom-select tabular-nums" aria-label="Year"></select>
+                        <select id="year-select" class="custom-select" aria-label="Year"></select>
                     </div>
                 </div>
             </div>
 
             <!-- Total Weeks & Total Months Cards -->
-            <div class="grid grid-cols-2 gap-4">
-                <div class="glass-panel p-5 flex flex-col justify-between">
-                    <span class="text-xs font-medium" style="color: var(--text-muted);">Total Weeks</span>
-                    <span id="weeks-display" class="text-2xl font-bold mt-2 tabular-nums" style="color: var(--accent-primary);">0</span>
+            <div class="grid grid-cols-2 gap-3.5">
+                <div class="glass-panel p-4 sm:p-5 flex flex-col justify-between">
+                    <span class="font-subtle text-xs" style="color: var(--text-muted);">Total Weeks</span>
+                    <span id="weeks-display" class="font-hero text-2xl sm:text-3xl mt-1.5" style="color: var(--accent-primary);">0</span>
                 </div>
                 
-                <div class="glass-panel p-5 flex flex-col justify-between">
-                    <span class="text-xs font-medium" style="color: var(--text-muted);">Total Months</span>
-                    <span id="months-display" class="text-2xl font-bold mt-2 tabular-nums" style="color: var(--accent-primary);">0</span>
+                <div class="glass-panel p-4 sm:p-5 flex flex-col justify-between">
+                    <span class="font-subtle text-xs" style="color: var(--text-muted);">Total Months</span>
+                    <span id="months-display" class="font-hero text-2xl sm:text-3xl mt-1.5" style="color: var(--accent-primary);">0</span>
                 </div>
             </div>
         </section>
@@ -289,7 +362,6 @@
                 "July", "August", "September", "October", "November", "December"
             ];
 
-            // Default Date: Feb 4, 2000 (Month is 0-indexed, so 1 = February)
             const DEFAULT_DATE = { month: 1, day: 4, year: 2000 };
             const STORAGE_KEY_DATE = 'sol_tracker_saved_date_v3';
             const STORAGE_KEY_THEME = 'sol_tracker_theme_v2';
@@ -315,7 +387,6 @@
             const iconCopy = document.getElementById('icon-copy');
             const iconCheck = document.getElementById('icon-check');
 
-            // 1. Initialize Theme
             function initTheme() {
                 const savedTheme = localStorage.getItem(STORAGE_KEY_THEME);
                 if (savedTheme === 'light') {
@@ -332,9 +403,7 @@
                 localStorage.setItem(STORAGE_KEY_THEME, isLight ? 'light' : 'dark');
             });
 
-            // 2. Populate Dropdowns
             function initDropdowns() {
-                // Populate Months
                 MONTHS.forEach((m, index) => {
                     const opt = document.createElement('option');
                     opt.value = index;
@@ -342,7 +411,6 @@
                     monthSelect.appendChild(opt);
                 });
 
-                // Populate Years (Current Year down to 1900)
                 const currentYear = new Date().getFullYear();
                 for (let y = currentYear; y >= 1900; y--) {
                     const opt = document.createElement('option');
@@ -351,7 +419,6 @@
                     yearSelect.appendChild(opt);
                 }
 
-                // Load saved date or fallback to Feb 4, 2023
                 let initialDate = DEFAULT_DATE;
                 const savedRaw = localStorage.getItem(STORAGE_KEY_DATE);
                 if (savedRaw) {
@@ -390,7 +457,6 @@
                 daySelect.value = Math.min(selectedDay, maxDays);
             }
 
-            // 3. Calculate & Update Display Immediately
             function calculateStats() {
                 const month = parseInt(monthSelect.value, 10);
                 const day = parseInt(daySelect.value, 10);
@@ -415,8 +481,6 @@
                 }
 
                 errorMsg.classList.add('hidden');
-
-                // Save valid selection to localStorage
                 localStorage.setItem(STORAGE_KEY_DATE, JSON.stringify({ month, day, year }));
 
                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -425,7 +489,6 @@
                 const diffWeeks = Math.floor(diffDays / 7);
                 const diffMonths = Math.floor(diffDays / 30.4375);
 
-                // 80-Year Life Progress Calculation
                 const lifePercent = Math.min((exactYears / MAX_LIFE_YEARS) * 100, 100);
 
                 solDisplay.textContent = diffDays.toLocaleString();
@@ -436,7 +499,6 @@
                 lifeBarFill.style.width = `${lifePercent}%`;
             }
 
-            // Event Listeners for Auto-Update
             monthSelect.addEventListener('change', () => {
                 const m = parseInt(monthSelect.value, 10);
                 const y = parseInt(yearSelect.value, 10);
@@ -455,7 +517,6 @@
 
             daySelect.addEventListener('change', calculateStats);
 
-            // 4. Copy Stats to Clipboard
             copyBtn.addEventListener('click', () => {
                 const sols = solDisplay.textContent;
                 const years = earthYearsDisplay.textContent;
@@ -475,7 +536,6 @@
                 });
             });
 
-            // Run on startup
             initTheme();
             initDropdowns();
             calculateStats();
