@@ -11,47 +11,40 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        /* ==========================================================================
-           Repository Font Definitions (@font-face) matching your exact filenames
-           ========================================================================== */
+        /* Exact repository font files */
         @font-face {
             font-family: 'Warren';
             src: url('WARREN.ttf') format('truetype');
-            font-weight: 400;
+            font-weight: normal;
             font-style: normal;
-            font-display: swap;
         }
 
         @font-face {
             font-family: 'Evantic';
             src: url('Evantic-Regular.ttf') format('truetype');
-            font-weight: 400;
+            font-weight: normal;
             font-style: normal;
-            font-display: swap;
         }
 
         @font-face {
             font-family: 'Evantic';
             src: url('Evantic-Italic.ttf') format('truetype');
-            font-weight: 400;
+            font-weight: normal;
             font-style: italic;
-            font-display: swap;
         }
 
         @font-face {
             font-family: 'Stora';
             src: url('Stora.ttf') format('truetype');
-            font-weight: 400;
+            font-weight: normal;
             font-style: normal;
-            font-display: swap;
         }
 
         @font-face {
-            font-family: 'Stora Light';
+            font-family: 'Stora-Light';
             src: url('Stora-Light.ttf') format('truetype');
             font-weight: 300;
             font-style: normal;
-            font-display: swap;
         }
 
         :root {
@@ -61,34 +54,30 @@
             --strong-cyan: #00d9e0;
             --azure-mist: #ebfeff;
 
-            /* Mapped Typeface Hierarchy */
             --font-display: 'Stora', sans-serif;
             --font-label: 'Warren', sans-serif;
             --font-sans: 'Evantic', sans-serif;
-            --font-light: 'Stora Light', sans-serif;
+            --font-light: 'Stora-Light', sans-serif;
 
-            /* Dark Theme Variables */
             --bg-main: var(--ink-black);
             --text-main: var(--azure-mist);
-            --text-muted: rgba(235, 254, 255, 0.65);
-            --panel-bg: rgba(0, 20, 20, 0.45);
-            --select-bg: rgba(0, 20, 20, 0.65);
-            --border-color: rgba(235, 254, 255, 0.16);
+            --text-muted: rgba(235, 254, 255, 0.7);
+            --panel-bg: rgba(0, 20, 20, 0.55);
+            --select-bg: rgba(0, 20, 20, 0.7);
+            --border-color: rgba(235, 254, 255, 0.18);
             --accent-primary: var(--strong-cyan);
-            --accent-secondary: var(--stormy-teal);
-            --pill-bg: rgba(0, 20, 20, 0.55);
+            --pill-bg: rgba(0, 20, 20, 0.6);
         }
 
         body.light-mode {
             --bg-main: var(--azure-mist);
             --text-main: var(--ink-black);
-            --text-muted: rgba(0, 20, 20, 0.65);
-            --panel-bg: rgba(235, 254, 255, 0.52);
-            --select-bg: rgba(235, 254, 255, 0.82);
-            --border-color: rgba(0, 99, 102, 0.28);
+            --text-muted: rgba(0, 20, 20, 0.7);
+            --panel-bg: rgba(235, 254, 255, 0.55);
+            --select-bg: rgba(235, 254, 255, 0.85);
+            --border-color: rgba(0, 99, 102, 0.35);
             --accent-primary: var(--ink-black);
-            --accent-secondary: var(--strong-cyan);
-            --pill-bg: rgba(235, 254, 255, 0.75);
+            --pill-bg: rgba(235, 254, 255, 0.8);
         }
 
         * {
@@ -102,34 +91,26 @@
             width: 100%;
             height: 100dvh;
             overflow: hidden;
-            background-color: var(--bg-main);
-            color: var(--text-main);
             font-family: var(--font-sans);
+            color: var(--text-main);
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ==========================================================================
-           Fixed Grain Gradient Background Integration
-           ========================================================================== */
-        .grain-gradient-stage {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            /* Uses grain_gradient_2.jfif for dark mode and grain_gradient_1.jfif for light mode */
+        /* Direct body background prevents stacking context masking */
+        body {
+            background-color: var(--bg-main);
             background-image: url('grain_gradient_2.jfif');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            background-attachment: fixed;
             transition: background-image 0.3s ease;
         }
 
-        body.light-mode .grain-gradient-stage {
+        body.light-mode {
             background-image: url('grain_gradient_1.jfif');
         }
 
-        /* ==========================================================================
-           Balanced Center-Weighted Layout & Mobile Full-Screen Scaling
-           ========================================================================== */
         .app-shell {
             width: 100%;
             height: 100dvh;
@@ -137,20 +118,10 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            /* Safe area padding prevents iPhone notch / home bar overlap */
-            padding-top: calc(env(safe-area-inset-top, 20px) + 1rem);
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 1rem);
+            padding-top: calc(env(safe-area-inset-top, 20px) + 0.75rem);
+            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 0.75rem);
             padding-left: 1.25rem;
             padding-right: 1.25rem;
-            position: relative;
-        }
-
-        .content-group {
-            width: 100%;
-            max-width: 380px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         @media (min-width: 640px) {
@@ -161,11 +132,11 @@
             }
             .app-shell {
                 max-width: 410px;
-                height: 812px;
+                height: 820px;
                 max-height: 94dvh;
-                padding: 1.75rem 1.75rem;
+                padding: 1.75rem;
                 border-radius: 2.75rem;
-                background: rgba(0, 20, 20, 0.2);
+                background: rgba(0, 20, 20, 0.35);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
                 border: 1px solid var(--border-color);
@@ -180,7 +151,6 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-shadow: 0 12px 32px -8px rgba(0, 20, 20, 0.35);
-            transition: background 0.3s ease, border-color 0.3s ease;
         }
 
         .icon-btn {
@@ -196,11 +166,11 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.15s ease;
         }
 
         .icon-btn:active {
-            transform: scale(0.94);
+            transform: scale(0.92);
         }
 
         .custom-select {
@@ -213,10 +183,8 @@
             border-radius: 0.95rem;
             padding: 0.65rem 1.75rem 0.65rem 0.8rem;
             font-size: 0.925rem;
-            font-weight: 500;
             width: 100%;
             cursor: pointer;
-            transition: border-color 0.2s ease, background-color 0.3s ease;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300d9e0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 0.6rem center;
@@ -232,16 +200,17 @@
             border-color: var(--strong-cyan);
         }
 
-        /* Typographic Classes with +10% Scale on Hero & Progress Bar */
+        /* 10% Scaled Typography Classes */
         .font-hero {
             font-family: var(--font-display);
             font-variant-numeric: tabular-nums;
-            font-size: 4.6rem;
+            font-size: 4.8rem;
+            line-height: 1;
         }
 
         .font-micro-label {
             font-family: var(--font-label);
-            letter-spacing: 0.16em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
         }
 
@@ -249,7 +218,7 @@
             font-family: var(--font-sans);
             font-style: italic;
             font-variant-numeric: tabular-nums;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
         }
 
         .font-subtle {
@@ -259,13 +228,10 @@
 </head>
 <body>
 
-    <!-- Grain Gradient Stage Backing -->
-    <div class="grain-gradient-stage"></div>
-
     <main class="app-shell">
         
-        <!-- Top Navigation -->
-        <header class="flex justify-between items-center z-10 w-full max-w-[380px]">
+        <!-- Top Controls -->
+        <header class="flex justify-between items-center w-full max-w-[340px]">
             <button id="theme-toggle" class="icon-btn" aria-label="Toggle Light/Dark Mode">
                 <svg id="icon-sun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -285,67 +251,73 @@
             </button>
         </header>
 
-        <!-- Centerpiece Sol Counter & 80-Year Life Bar (+10% larger, balanced padding) -->
-        <section class="content-group my-auto py-2">
-            <span class="font-micro-label text-xs" style="color: var(--text-muted);">Sols</span>
+        <!-- Center Group (Tightly clustered, removes large gap) -->
+        <div class="w-full flex flex-col items-center justify-center gap-6 my-auto">
             
-            <h1 id="sol-display" class="font-hero tracking-tight my-1" style="color: var(--accent-primary);">
-                0
-            </h1>
-            
-            <div class="px-4 py-1.5 rounded-full border flex items-center gap-2" style="border-color: var(--border-color); background: var(--pill-bg); backdrop-filter: blur(8px);">
-                <span class="w-2 h-2 rounded-full" style="background-color: var(--strong-cyan);"></span>
-                <span id="earth-years-display" class="font-editorial-italic tracking-wide">0.0 Earth Years</span>
-            </div>
-
-            <!-- 80-Year Life Expectancy Progress Bar -->
-            <div class="w-full max-w-[315px] mt-4">
-                <div class="flex justify-between items-baseline mb-1.5">
-                    <span class="font-subtle text-xs" style="color: var(--text-muted);">0 Yrs</span>
-                    <span id="life-percent-display" class="font-editorial-italic text-sm font-semibold" style="color: var(--text-main);">0.0%</span>
-                    <span class="font-subtle text-xs" style="color: var(--text-muted);">80 Yrs</span>
-                </div>
-                <div class="w-full h-3.5 rounded-full overflow-hidden p-0.5" style="background: var(--select-bg); border: 1px solid var(--border-color);">
-                    <div id="life-bar-fill" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, var(--stormy-teal), var(--strong-cyan));"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bottom Controls & Secondary Metrics (Tighter spacing removing negative gaps) -->
-        <section class="content-group gap-2.5">
-            <!-- 3-Way Date Selector Card -->
-            <div class="glass-panel p-4 w-full">
-                <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-xs font-micro-label" style="color: var(--text-muted);">Start Date</h2>
-                    <span id="error-message" class="text-xs font-medium text-red-400 hidden">Future date invalid</span>
-                </div>
+            <!-- Hero Counter & Progress Bar -->
+            <section class="flex flex-col items-center justify-center w-full">
+                <span class="font-micro-label text-xs" style="color: var(--text-muted);">SOLS</span>
                 
-                <div class="grid grid-cols-12 gap-2">
-                    <div class="col-span-5">
-                        <select id="month-select" class="custom-select" aria-label="Month"></select>
-                    </div>
-                    <div class="col-span-3">
-                        <select id="day-select" class="custom-select" aria-label="Day"></select>
-                    </div>
-                    <div class="col-span-4">
-                        <select id="year-select" class="custom-select" aria-label="Year"></select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Weeks & Total Months Cards -->
-            <div class="grid grid-cols-2 gap-2.5 w-full">
-                <div class="glass-panel p-4 flex flex-col justify-between">
-                    <span class="font-subtle text-xs" style="color: var(--text-muted);">Total Weeks</span>
-                    <span id="weeks-display" class="font-hero text-2xl sm:text-3xl mt-1" style="color: var(--accent-primary);">0</span>
-                </div>
+                <h1 id="sol-display" class="font-hero my-2 tracking-tight" style="color: var(--accent-primary);">
+                    0
+                </h1>
                 
-                <div class="glass-panel p-4 flex flex-col justify-between">
-                    <span class="font-subtle text-xs" style="color: var(--text-muted);">Total Months</span>
-                    <span id="months-display" class="font-hero text-2xl sm:text-3xl mt-1" style="color: var(--accent-primary);">0</span>
+                <div class="px-5 py-2 rounded-full border flex items-center gap-2.5" style="border-color: var(--border-color); background: var(--pill-bg); backdrop-filter: blur(8px);">
+                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--strong-cyan);"></span>
+                    <span id="earth-years-display" class="font-editorial-italic tracking-wide">0.0 Earth Years</span>
                 </div>
-            </div>
-        </section>
+
+                <!-- 10% Larger Progress Bar -->
+                <div class="w-full max-w-[340px] mt-6">
+                    <div class="flex justify-between items-baseline mb-2">
+                        <span class="font-micro-label text-xs" style="color: var(--text-muted);">0 YRS</span>
+                        <span id="life-percent-display" class="font-editorial-italic text-base font-semibold" style="color: var(--text-main);">0.0%</span>
+                        <span class="font-micro-label text-xs" style="color: var(--text-muted);">80 YRS</span>
+                    </div>
+                    <div class="w-full h-4 rounded-full overflow-hidden p-0.5" style="background: var(--select-bg); border: 1px solid var(--border-color);">
+                        <div id="life-bar-fill" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, var(--stormy-teal), var(--strong-cyan));"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inputs & Metrics Cards -->
+            <section class="flex flex-col gap-3.5 w-full max-w-[340px]">
+                <div class="glass-panel p-4">
+                    <div class="flex justify-between items-center mb-2.5">
+                        <h2 class="text-xs font-micro-label" style="color: var(--text-muted);">START DATE</h2>
+                        <span id="error-message" class="text-xs font-medium text-red-400 hidden">Future date invalid</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-5">
+                            <select id="month-select" class="custom-select" aria-label="Month"></select>
+                        </div>
+                        <div class="col-span-3">
+                            <select id="day-select" class="custom-select" aria-label="Day"></select>
+                        </div>
+                        <div class="col-span-4">
+                            <select id="year-select" class="custom-select" aria-label="Year"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3.5">
+                    <div class="glass-panel p-4 flex flex-col justify-between">
+                        <span class="font-micro-label text-xs" style="color: var(--text-muted);">TOTAL WEEKS</span>
+                        <span id="weeks-display" class="font-hero text-3xl mt-1.5" style="color: var(--accent-primary);">0</span>
+                    </div>
+                    
+                    <div class="glass-panel p-4 flex flex-col justify-between">
+                        <span class="font-micro-label text-xs" style="color: var(--text-muted);">TOTAL MONTHS</span>
+                        <span id="months-display" class="font-hero text-3xl mt-1.5" style="color: var(--accent-primary);">0</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Spacer to balance header on full-height screens -->
+        <div class="w-full max-w-[340px] h-2"></div>
 
     </main>
 
@@ -357,7 +329,7 @@
             ];
 
             const DEFAULT_DATE = { month: 1, day: 4, year: 2000 };
-            const STORAGE_KEY_DATE = 'sol_tracker_saved_date_v3';
+            const STORAGE_KEY_DATE = 'sol_tracker_saved_date_v4';
             const STORAGE_KEY_THEME = 'sol_tracker_theme_v2';
             const MAX_LIFE_YEARS = 80;
 
