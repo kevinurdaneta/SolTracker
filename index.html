@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#001414">
+    <title>Sol Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --ink-black: #001414;
+            --jet-black: #002729;
+            --stormy-teal: #006366;
+            --strong-cyan: #00d9e0;
+            --azure-mist: #ebfeff;
+
+            /* Active Theme Variables (Default: Dark) */
+            --bg-main: var(--ink-black);
+            --text-main: var(--azure-mist);
+            --text-muted: rgba(235, 254, 255, 0.6);
+            --card-bg: rgba(0, 39, 41, 0.55);
+            --panel-bg: rgba(0, 39, 41, 0.45);
+            --select-bg: rgba(0, 20, 20, 0.65);
+            --border-color: rgba(0, 99, 102, 0.45);
+            --accent-primary: var(--strong-cyan);
+            --accent-secondary: var(--stormy-teal);
+            --pill-bg: rgba(0, 39, 41, 0.8);
+            --glow-opacity: 0.22;
+            --grain-opacity: 0.45;
+        }
+
+        body.light-mode {
+            --bg-main: var(--azure-mist);
+            --text-main: var(--ink-black);
+            --text-muted: rgba(0, 20, 20, 0.65);
+            --card-bg: rgba(235, 254, 255, 0.65);
+            --panel-bg: rgba(255, 255, 255, 0.55);
+            --select-bg: rgba(235, 254, 255, 0.9);
+            --border-color: rgba(0, 99, 102, 0.3);
+            --accent-primary: var(--stormy-teal);
+            --accent-secondary: var(--strong-cyan);
+            --pill-bg: rgba(255, 255, 255, 0.85);
+            --glow-opacity: 0.35;
+            --grain-opacity: 0.3;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100dvh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Ambient Mesh & Grain Background */
+        .ambient-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 15%, var(--strong-cyan) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, var(--stormy-teal) 0%, transparent 55%),
+                radial-gradient(circle at 50% 50%, var(--jet-black) 0%, var(--bg-main) 100%);
+            opacity: var(--glow-opacity);
+            transition: opacity 0.3s ease;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: var(--grain-opacity);
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+
+        /* Responsive Full-Screen Mobile Container */
+        .app-container {
+            width: 100%;
+            min-height: 100dvh;
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        @media (min-width: 640px) {
+            .app-container {
+                max-width: 410px;
+                min-height: 780px;
+                height: auto;
+                border-radius: 2.5rem;
+                border: 1px solid var(--border-color);
+                box-shadow: 0 25px 50px -12px rgba(0, 20, 20, 0.7);
+            }
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .icon-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        .icon-btn:active {
+            transform: translateY(0);
+        }
+
+        .custom-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: var(--select-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 0.875rem;
+            padding: 0.65rem 1.75rem 0.65rem 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300d9e0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.6rem center;
+            background-size: 0.95rem;
+        }
+
+        body.light-mode .custom-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23006366'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        .custom-select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="p-0 sm:p-6">
+
+    <div class="ambient-canvas"></div>
+    <div class="grain-overlay"></div>
+
+    <main class="app-container p-6 sm:p-7">
+        
+        <!-- Top Navigation -->
+        <header class="flex justify-between items-center z-10 pt-2">
+            <!-- Top-Left: Light / Dark Theme Toggle -->
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Light/Dark Mode" title="Toggle Theme">
+                <!-- Sun Icon (shown in dark mode) -->
+                <svg id="icon-sun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <!-- Moon Icon (shown in light mode) -->
+                <svg id="icon-moon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+
+            <!-- Top-Right: Copy Stats Button -->
+            <button id="copy-btn" class="icon-btn" aria-label="Copy Stats" title="Copy Stats">
+                <svg id="icon-copy" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <svg id="icon-check" class="w-4 h-4 hidden" style="color: var(--accent-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Centerpiece Sol Counter & 80-Year Bar -->
+        <section class="flex flex-col items-center my-auto py-8 z-10">
+            <span class="text-xs font-semibold uppercase tracking-widest" style="color: var(--text-muted);">Sols</span>
+            
+            <h1 id="sol-display" class="text-6xl sm:text-7xl font-bold mt-2 tracking-tight tabular-nums" style="color: var(--accent-primary);">
+                0
+            </h1>
+            
+            <div class="mt-4 px-4 py-1.5 rounded-full border text-xs font-medium tracking-wide flex items-center gap-2" style="border-color: var(--border-color); background: var(--pill-bg);">
+                <span class="w-2 h-2 rounded-full" style="background-color: var(--accent-primary);"></span>
+                <span id="earth-years-display" class="tabular-nums">0.0 Earth Years</span>
+            </div>
+
+            <!-- 80-Year Life Expectancy Progress Bar -->
+            <div class="w-full max-w-[280px] mt-8">
+                <div class="flex justify-between items-center text-xs font-medium mb-2" style="color: var(--text-muted);">
+                    <span>0 Yrs</span>
+                    <span id="life-percent-display" class="tabular-nums font-semibold" style="color: var(--text-main);">0.0%</span>
+                    <span>80 Yrs</span>
+                </div>
+                <div class="w-full h-2.5 rounded-full overflow-hidden p-0.5" style="background: var(--select-bg); border: 1px solid var(--border-color);">
+                    <div id="life-bar-fill" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, var(--stormy-teal), var(--strong-cyan));"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Controls & Secondary Metrics -->
+        <section class="flex flex-col gap-4 z-10 pb-2">
+            <!-- 3-Way Date Selector Card -->
+            <div class="glass-panel p-5">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-semibold tracking-wide">Start Date</h2>
+                    <span id="error-message" class="text-xs font-medium text-red-400 hidden">Date cannot be in the future</span>
+                </div>
+                
+                <div class="grid grid-cols-12 gap-2.5">
+                    <!-- Month (Full Name) -->
+                    <div class="col-span-5">
+                        <select id="month-select" class="custom-select" aria-label="Month"></select>
+                    </div>
+                    <!-- Day -->
+                    <div class="col-span-3">
+                        <select id="day-select" class="custom-select tabular-nums" aria-label="Day"></select>
+                    </div>
+                    <!-- Year -->
+                    <div class="col-span-4">
+                        <select id="year-select" class="custom-select tabular-nums" aria-label="Year"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Weeks & Total Months Cards -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-panel p-5 flex flex-col justify-between">
+                    <span class="text-xs font-medium" style="color: var(--text-muted);">Total Weeks</span>
+                    <span id="weeks-display" class="text-2xl font-bold mt-2 tabular-nums" style="color: var(--accent-primary);">0</span>
+                </div>
+                
+                <div class="glass-panel p-5 flex flex-col justify-between">
+                    <span class="text-xs font-medium" style="color: var(--text-muted);">Total Months</span>
+                    <span id="months-display" class="text-2xl font-bold mt-2 tabular-nums" style="color: var(--accent-primary);">0</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const MONTHS = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            // Default Date: Feb 4, 2023 (Month is 0-indexed, so 1 = February)
+            const DEFAULT_DATE = { month: 1, day: 4, year: 2023 };
+            const STORAGE_KEY_DATE = 'sol_tracker_saved_date_v2';
+            const STORAGE_KEY_THEME = 'sol_tracker_theme_v2';
+            const MAX_LIFE_YEARS = 80;
+
+            const monthSelect = document.getElementById('month-select');
+            const daySelect = document.getElementById('day-select');
+            const yearSelect = document.getElementById('year-select');
+            const errorMsg = document.getElementById('error-message');
+
+            const solDisplay = document.getElementById('sol-display');
+            const earthYearsDisplay = document.getElementById('earth-years-display');
+            const weeksDisplay = document.getElementById('weeks-display');
+            const monthsDisplay = document.getElementById('months-display');
+            const lifePercentDisplay = document.getElementById('life-percent-display');
+            const lifeBarFill = document.getElementById('life-bar-fill');
+
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const iconSun = document.getElementById('icon-sun');
+            const iconMoon = document.getElementById('icon-moon');
+
+            const copyBtn = document.getElementById('copy-btn');
+            const iconCopy = document.getElementById('icon-copy');
+            const iconCheck = document.getElementById('icon-check');
+
+            // 1. Initialize Theme
+            function initTheme() {
+                const savedTheme = localStorage.getItem(STORAGE_KEY_THEME);
+                if (savedTheme === 'light') {
+                    document.body.classList.add('light-mode');
+                    iconSun.classList.add('hidden');
+                    iconMoon.classList.remove('hidden');
+                }
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isLight = document.body.classList.toggle('light-mode');
+                iconSun.classList.toggle('hidden', isLight);
+                iconMoon.classList.toggle('hidden', !isLight);
+                localStorage.setItem(STORAGE_KEY_THEME, isLight ? 'light' : 'dark');
+            });
+
+            // 2. Populate Dropdowns
+            function initDropdowns() {
+                // Populate Months
+                MONTHS.forEach((m, index) => {
+                    const opt = document.createElement('option');
+                    opt.value = index;
+                    opt.textContent = m;
+                    monthSelect.appendChild(opt);
+                });
+
+                // Populate Years (Current Year down to 1900)
+                const currentYear = new Date().getFullYear();
+                for (let y = currentYear; y >= 1900; y--) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    yearSelect.appendChild(opt);
+                }
+
+                // Load saved date or fallback to Feb 4, 2023
+                let initialDate = DEFAULT_DATE;
+                const savedRaw = localStorage.getItem(STORAGE_KEY_DATE);
+                if (savedRaw) {
+                    try {
+                        const parsed = JSON.parse(savedRaw);
+                        if (
+                            typeof parsed.month === 'number' &&
+                            typeof parsed.day === 'number' &&
+                            typeof parsed.year === 'number'
+                        ) {
+                            initialDate = parsed;
+                        }
+                    } catch (e) {
+                        initialDate = DEFAULT_DATE;
+                    }
+                }
+
+                monthSelect.value = initialDate.month;
+                yearSelect.value = initialDate.year;
+                populateDays(initialDate.month, initialDate.year, initialDate.day);
+            }
+
+            function getDaysInMonth(month, year) {
+                return new Date(year, month + 1, 0).getDate();
+            }
+
+            function populateDays(month, year, selectedDay) {
+                const maxDays = getDaysInMonth(month, year);
+                daySelect.innerHTML = '';
+                for (let d = 1; d <= maxDays; d++) {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    daySelect.appendChild(opt);
+                }
+                daySelect.value = Math.min(selectedDay, maxDays);
+            }
+
+            // 3. Calculate & Update Display Immediately
+            function calculateStats() {
+                const month = parseInt(monthSelect.value, 10);
+                const day = parseInt(daySelect.value, 10);
+                const year = parseInt(yearSelect.value, 10);
+
+                const selectedDate = new Date(year, month, day);
+                const today = new Date();
+                selectedDate.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+
+                const diffTime = today.getTime() - selectedDate.getTime();
+
+                if (diffTime < 0) {
+                    errorMsg.classList.remove('hidden');
+                    solDisplay.textContent = '0';
+                    earthYearsDisplay.textContent = '0.0 Earth Years';
+                    weeksDisplay.textContent = '0';
+                    monthsDisplay.textContent = '0';
+                    lifePercentDisplay.textContent = '0.0%';
+                    lifeBarFill.style.width = '0%';
+                    return;
+                }
+
+                errorMsg.classList.add('hidden');
+
+                // Save valid selection to localStorage
+                localStorage.setItem(STORAGE_KEY_DATE, JSON.stringify({ month, day, year }));
+
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const exactYears = diffDays / 365.25;
+                const diffYearsFormatted = exactYears.toFixed(1);
+                const diffWeeks = Math.floor(diffDays / 7);
+                const diffMonths = Math.floor(diffDays / 30.4375);
+
+                // 80-Year Life Progress Calculation
+                const lifePercent = Math.min((exactYears / MAX_LIFE_YEARS) * 100, 100);
+
+                solDisplay.textContent = diffDays.toLocaleString();
+                earthYearsDisplay.textContent = `${diffYearsFormatted} Earth Years`;
+                weeksDisplay.textContent = diffWeeks.toLocaleString();
+                monthsDisplay.textContent = diffMonths.toLocaleString();
+                lifePercentDisplay.textContent = `${lifePercent.toFixed(1)}%`;
+                lifeBarFill.style.width = `${lifePercent}%`;
+            }
+
+            // Event Listeners for Auto-Update
+            monthSelect.addEventListener('change', () => {
+                const m = parseInt(monthSelect.value, 10);
+                const y = parseInt(yearSelect.value, 10);
+                const currentDay = parseInt(daySelect.value, 10);
+                populateDays(m, y, currentDay);
+                calculateStats();
+            });
+
+            yearSelect.addEventListener('change', () => {
+                const m = parseInt(monthSelect.value, 10);
+                const y = parseInt(yearSelect.value, 10);
+                const currentDay = parseInt(daySelect.value, 10);
+                populateDays(m, y, currentDay);
+                calculateStats();
+            });
+
+            daySelect.addEventListener('change', calculateStats);
+
+            // 4. Copy Stats to Clipboard
+            copyBtn.addEventListener('click', () => {
+                const sols = solDisplay.textContent;
+                const years = earthYearsDisplay.textContent;
+                const weeks = weeksDisplay.textContent;
+                const months = monthsDisplay.textContent;
+                const progress = lifePercentDisplay.textContent;
+
+                const summaryText = `Sol Tracker: ${sols} Sols (${years}) | ${weeks} Weeks | ${months} Months | ${progress} of 80 Yrs`;
+
+                navigator.clipboard.writeText(summaryText).then(() => {
+                    iconCopy.classList.add('hidden');
+                    iconCheck.classList.remove('hidden');
+                    setTimeout(() => {
+                        iconCopy.classList.remove('hidden');
+                        iconCheck.classList.add('hidden');
+                    }, 1500);
+                });
+            });
+
+            // Run on startup
+            initTheme();
+            initDropdowns();
+            calculateStats();
+        });
+    </script>
+</body>
+</html>
