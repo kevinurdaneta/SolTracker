@@ -11,7 +11,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        /* Exact repository font files */
+        /* ==========================================================================
+           Repository Font Definitions (@font-face)
+           ========================================================================== */
         @font-face {
             font-family: 'Warren';
             src: url('WARREN.ttf') format('truetype');
@@ -62,11 +64,15 @@
             --bg-main: var(--ink-black);
             --text-main: var(--azure-mist);
             --text-muted: rgba(235, 254, 255, 0.7);
-            --panel-bg: rgba(0, 20, 20, 0.55);
-            --select-bg: rgba(0, 20, 20, 0.7);
+            --panel-bg: rgba(0, 20, 20, 0.52);
+            --select-bg: rgba(0, 20, 20, 0.68);
             --border-color: rgba(235, 254, 255, 0.18);
             --accent-primary: var(--strong-cyan);
-            --pill-bg: rgba(0, 20, 20, 0.6);
+            --pill-bg: rgba(0, 20, 20, 0.58);
+
+            /* Inverse Progress Bar Fill (Bright in Dark Mode) */
+            --bar-fill: var(--azure-mist);
+            --bar-glow: rgba(235, 254, 255, 0.45);
         }
 
         body.light-mode {
@@ -75,9 +81,13 @@
             --text-muted: rgba(0, 20, 20, 0.7);
             --panel-bg: rgba(235, 254, 255, 0.55);
             --select-bg: rgba(235, 254, 255, 0.85);
-            --border-color: rgba(0, 99, 102, 0.35);
+            --border-color: rgba(0, 99, 102, 0.32);
             --accent-primary: var(--ink-black);
-            --pill-bg: rgba(235, 254, 255, 0.8);
+            --pill-bg: rgba(235, 254, 255, 0.78);
+
+            /* Inverse Progress Bar Fill (Deep in Light Mode) */
+            --bar-fill: var(--ink-black);
+            --bar-glow: rgba(0, 20, 20, 0.25);
         }
 
         * {
@@ -93,22 +103,30 @@
             overflow: hidden;
             font-family: var(--font-sans);
             color: var(--text-main);
+            background-color: var(--bg-main);
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Direct body background prevents stacking context masking */
-        body {
-            background-color: var(--bg-main);
-            background-image: url('grain_gradient_2.jfif');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            transition: background-image 0.3s ease;
+        /* Dynamic Generative Background Canvases */
+        #gradient-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            pointer-events: none;
+            transition: filter 1.2s ease-in-out;
         }
 
-        body.light-mode {
-            background-image: url('grain_gradient_1.jfif');
+        #grain-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            transition: opacity 1s ease-in-out;
         }
 
         .app-shell {
@@ -122,6 +140,7 @@
             padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 0.75rem);
             padding-left: 1.25rem;
             padding-right: 1.25rem;
+            position: relative;
         }
 
         @media (min-width: 640px) {
@@ -136,9 +155,9 @@
                 max-height: 94dvh;
                 padding: 1.75rem;
                 border-radius: 2.75rem;
-                background: rgba(0, 20, 20, 0.35);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
+                background: rgba(0, 20, 20, 0.3);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
                 border: 1px solid var(--border-color);
                 box-shadow: 0 25px 50px -12px rgba(0, 20, 20, 0.75);
             }
@@ -200,17 +219,17 @@
             border-color: var(--strong-cyan);
         }
 
-        /* 10% Scaled Typography Classes */
+        /* Scaled Display Typography */
         .font-hero {
             font-family: var(--font-display);
             font-variant-numeric: tabular-nums;
-            font-size: 4.8rem;
-            line-height: 1;
+            font-size: 5.5rem;
+            line-height: 0.95;
         }
 
         .font-micro-label {
             font-family: var(--font-label);
-            letter-spacing: 0.12em;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
         }
 
@@ -218,15 +237,35 @@
             font-family: var(--font-sans);
             font-style: italic;
             font-variant-numeric: tabular-nums;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
         }
 
-        .font-subtle {
-            font-family: var(--font-light);
+        /* 30% Thicker Progress Bar with Inverse Fill */
+        .progress-track {
+            height: 22px;
+            border-radius: 9999px;
+            overflow: hidden;
+            padding: 3px;
+            background: var(--select-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 9999px;
+            background: var(--bar-fill);
+            box-shadow: 0 0 14px var(--bar-glow);
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
+
+    <!-- Generative Fluid Gradient Canvas -->
+    <canvas id="gradient-canvas"></canvas>
+
+    <!-- Dynamic Animated Grain Canvas -->
+    <canvas id="grain-canvas"></canvas>
 
     <main class="app-shell">
         
@@ -251,36 +290,38 @@
             </button>
         </header>
 
-        <!-- Center Group (Tightly clustered, removes large gap) -->
+        <!-- Center Weighted Content Group -->
         <div class="w-full flex flex-col items-center justify-center gap-6 my-auto">
             
-            <!-- Hero Counter & Progress Bar -->
+            <!-- Hero Counter & Scaled Progress Bar -->
             <section class="flex flex-col items-center justify-center w-full">
-                <span class="font-micro-label text-xs" style="color: var(--text-muted);">SOLS</span>
+                <!-- Enlarged "SOLS" Label -->
+                <span class="font-micro-label text-sm font-semibold tracking-widest" style="color: var(--text-muted);">SOLS</span>
                 
-                <h1 id="sol-display" class="font-hero my-2 tracking-tight" style="color: var(--accent-primary);">
+                <!-- Enlarged Sol Counter Number -->
+                <h1 id="sol-display" class="font-hero my-1 tracking-tight" style="color: var(--accent-primary);">
                     0
                 </h1>
                 
-                <div class="px-5 py-2 rounded-full border flex items-center gap-2.5" style="border-color: var(--border-color); background: var(--pill-bg); backdrop-filter: blur(8px);">
+                <div class="px-5 py-2 rounded-full border flex items-center gap-2.5 mt-1" style="border-color: var(--border-color); background: var(--pill-bg); backdrop-filter: blur(8px);">
                     <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--strong-cyan);"></span>
                     <span id="earth-years-display" class="font-editorial-italic tracking-wide">0.0 Earth Years</span>
                 </div>
 
-                <!-- 10% Larger Progress Bar -->
+                <!-- 30% Thicker Progress Bar with Slightly Larger Readouts & Inverse Fill -->
                 <div class="w-full max-w-[340px] mt-6">
                     <div class="flex justify-between items-baseline mb-2">
-                        <span class="font-micro-label text-xs" style="color: var(--text-muted);">0 YRS</span>
-                        <span id="life-percent-display" class="font-editorial-italic text-base font-semibold" style="color: var(--text-main);">0.0%</span>
-                        <span class="font-micro-label text-xs" style="color: var(--text-muted);">80 YRS</span>
+                        <span class="font-micro-label text-sm font-medium" style="color: var(--text-muted);">0 YRS</span>
+                        <span id="life-percent-display" class="font-editorial-italic text-lg font-bold" style="color: var(--text-main);">0.0%</span>
+                        <span class="font-micro-label text-sm font-medium" style="color: var(--text-muted);">80 YRS</span>
                     </div>
-                    <div class="w-full h-4 rounded-full overflow-hidden p-0.5" style="background: var(--select-bg); border: 1px solid var(--border-color);">
-                        <div id="life-bar-fill" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, var(--stormy-teal), var(--strong-cyan));"></div>
+                    <div class="progress-track">
+                        <div id="life-bar-fill" class="progress-fill" style="width: 0%;"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- Inputs & Metrics Cards -->
+            <!-- Inputs & Metric Panels -->
             <section class="flex flex-col gap-3.5 w-full max-w-[340px]">
                 <div class="glass-panel p-4">
                     <div class="flex justify-between items-center mb-2.5">
@@ -316,20 +357,176 @@
 
         </div>
 
-        <!-- Spacer to balance header on full-height screens -->
+        <!-- Layout Balancing Spacer -->
         <div class="w-full max-w-[340px] h-2"></div>
 
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // ==========================================================================
+            // Autonomous Dynamic Moving Gradient Engine
+            // ==========================================================================
+            const gradCanvas = document.getElementById('gradient-canvas');
+            const gCtx = gradCanvas.getContext('2d');
+            const grainCanvas = document.getElementById('grain-canvas');
+            const grCtx = grainCanvas.getContext('2d');
+
+            function resizeCanvases() {
+                // Scaled down resolution for high performance on mobile GPUs
+                gradCanvas.width = Math.floor(window.innerWidth / 2);
+                gradCanvas.height = Math.floor(window.innerHeight / 2);
+                grainCanvas.width = Math.floor(window.innerWidth / 2);
+                grainCanvas.height = Math.floor(window.innerHeight / 2);
+            }
+            window.addEventListener('resize', resizeCanvases);
+            resizeCanvases();
+
+            // Palette definitions for dark and light modes
+            const PALETTES = {
+                dark: {
+                    base: '#001414',
+                    nodes: [
+                        { color: '0, 217, 224', radiusRatio: 0.9 }, // Strong Cyan
+                        { color: '0, 99, 102', radiusRatio: 1.1 },  // Stormy Teal
+                        { color: '0, 39, 41', radiusRatio: 1.3 },   // Jet Black
+                        { color: '235, 254, 255', radiusRatio: 0.7 } // Azure Mist
+                    ]
+                },
+                light: {
+                    base: '#ebfeff',
+                    nodes: [
+                        { color: '0, 217, 224', radiusRatio: 0.8 },  // Strong Cyan
+                        { color: '0, 99, 102', radiusRatio: 0.95 },  // Stormy Teal
+                        { color: '168, 238, 240', radiusRatio: 1.2 }, // Soft Aqua
+                        { color: '0, 20, 20', radiusRatio: 0.6 }     // Deep Contrast
+                    ]
+                }
+            };
+
+            let currentTheme = localStorage.getItem('sol_tracker_theme_v2') === 'light' ? 'light' : 'dark';
+
+            // Randomly moving color nodes
+            const nodes = PALETTES.dark.nodes.map((n, i) => ({
+                ...n,
+                x: Math.random() * gradCanvas.width,
+                y: Math.random() * gradCanvas.height,
+                vx: (Math.random() - 0.5) * 0.7,
+                vy: (Math.random() - 0.5) * 0.7,
+                targetRadius: 150,
+                radius: 150
+            }));
+
+            // Randomized blur and grain variables
+            let currentBlur = 45;
+            let targetBlur = 55;
+            let blurTimer = 0;
+
+            let currentGrainOpacity = 0.45;
+            let targetGrainOpacity = 0.55;
+            let grainTimer = 0;
+
+            function updateRandomValues() {
+                // Randomly shift target blur between 35px and 70px every ~3 seconds
+                blurTimer++;
+                if (blurTimer > 180) {
+                    targetBlur = 35 + Math.random() * 35;
+                    blurTimer = 0;
+                }
+                currentBlur += (targetBlur - currentBlur) * 0.02;
+                gradCanvas.style.filter = `blur(${currentBlur.toFixed(1)}px)`;
+
+                // Randomly shift grain opacity between 0.35 and 0.65
+                grainTimer++;
+                if (grainTimer > 150) {
+                    targetGrainOpacity = 0.35 + Math.random() * 0.3;
+                    grainTimer = 0;
+                }
+                currentGrainOpacity += (targetGrainOpacity - currentGrainOpacity) * 0.025;
+                grainCanvas.style.opacity = currentGrainOpacity.toFixed(3);
+            }
+
+            function renderGradient() {
+                const w = gradCanvas.width;
+                const h = gradCanvas.height;
+                const p = PALETTES[currentTheme];
+
+                gCtx.fillStyle = p.base;
+                gCtx.fillRect(0, 0, w, h);
+
+                // Move and draw each fluid color node
+                nodes.forEach((node, i) => {
+                    node.x += node.vx;
+                    node.y += node.vy;
+
+                    // Bounce off boundaries smoothly with slight randomized drift
+                    if (node.x < -w * 0.2 || node.x > w * 1.2) {
+                        node.vx *= -1;
+                        node.vx += (Math.random() - 0.5) * 0.2;
+                    }
+                    if (node.y < -h * 0.2 || node.y > h * 1.2) {
+                        node.vy *= -1;
+                        node.vy += (Math.random() - 0.5) * 0.2;
+                    }
+
+                    const activeColor = p.nodes[i].color;
+                    const radius = Math.max(w, h) * p.nodes[i].radiusRatio * 0.75;
+                    const grad = gCtx.createRadialGradient(node.x, node.y, 0, node.x, node.y, radius);
+                    
+                    grad.addColorStop(0, `rgba(${activeColor}, 0.85)`);
+                    grad.addColorStop(0.5, `rgba(${activeColor}, 0.35)`);
+                    grad.addColorStop(1, `rgba(${activeColor}, 0)`);
+
+                    gCtx.fillStyle = grad;
+                    gCtx.fillRect(0, 0, w, h);
+                });
+            }
+
+            // Procedural grain generation
+            function renderGrain() {
+                const w = grainCanvas.width;
+                const h = grainCanvas.height;
+                const imgData = grCtx.createImageData(w, h);
+                const data = imgData.data;
+
+                // Subtle dynamic noise calculation
+                const intensity = 32 + Math.floor(Math.random() * 12);
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const noise = Math.floor(Math.random() * intensity);
+                    data[i] = noise;
+                    data[i + 1] = noise;
+                    data[i + 2] = noise;
+                    data[i + 3] = noise * 1.6;
+                }
+                grCtx.putImageData(imgData, 0, 0);
+            }
+
+            // Smooth 60fps gradient flow, throttled grain recreation
+            let frameCount = 0;
+            function animationLoop() {
+                updateRandomValues();
+                renderGradient();
+                
+                frameCount++;
+                if (frameCount % 4 === 0) {
+                    renderGrain();
+                }
+
+                requestAnimationFrame(animationLoop);
+            }
+            requestAnimationFrame(animationLoop);
+
+            // ==========================================================================
+            // Tracker Logic & Controls
+            // ==========================================================================
             const MONTHS = [
                 "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"
             ];
 
             const DEFAULT_DATE = { month: 1, day: 4, year: 2000 };
-            const STORAGE_KEY_DATE = 'sol_tracker_saved_date_v4';
+            const STORAGE_KEY_DATE = 'sol_tracker_saved_date_v5';
             const STORAGE_KEY_THEME = 'sol_tracker_theme_v2';
             const MAX_LIFE_YEARS = 80;
 
@@ -356,17 +553,21 @@
             function initTheme() {
                 const savedTheme = localStorage.getItem(STORAGE_KEY_THEME);
                 if (savedTheme === 'light') {
+                    currentTheme = 'light';
                     document.body.classList.add('light-mode');
                     iconSun.classList.add('hidden');
                     iconMoon.classList.remove('hidden');
+                } else {
+                    currentTheme = 'dark';
                 }
             }
 
             themeToggleBtn.addEventListener('click', () => {
                 const isLight = document.body.classList.toggle('light-mode');
+                currentTheme = isLight ? 'light' : 'dark';
                 iconSun.classList.toggle('hidden', isLight);
                 iconMoon.classList.toggle('hidden', !isLight);
-                localStorage.setItem(STORAGE_KEY_THEME, isLight ? 'light' : 'dark');
+                localStorage.setItem(STORAGE_KEY_THEME, currentTheme);
             });
 
             function initDropdowns() {
