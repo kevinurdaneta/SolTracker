@@ -126,22 +126,87 @@
         }
 
         /* ==========================================================================
-           Guaranteed Visible Grain Gradient Stage (Image + CSS Fallback)
+           Generative Organic Fluid Gradient & Animated Grain Stage
            ========================================================================== */
-        .grain-gradient-stage {
+        .generative-stage {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background-color: var(--bg-main);
+            overflow: hidden;
+        }
+
+        /* Organic Morphing Blobs */
+        .blob {
+            position: absolute;
+            filter: blur(60px);
+            opacity: 0.65;
+            mix-blend-mode: screen;
+            border-radius: 50%;
+            animation: driftBlob 18s infinite alternate ease-in-out;
+        }
+
+        body.light-mode .blob {
+            mix-blend-mode: multiply;
+            opacity: 0.45;
+            filter: blur(50px);
+        }
+
+        .blob-1 {
+            width: 65vw;
+            height: 65vw;
+            background: var(--strong-cyan);
+            top: -15%;
+            left: -15%;
+            animation-duration: 22s;
+        }
+
+        .blob-2 {
+            width: 70vw;
+            height: 70vw;
+            background: var(--stormy-teal);
+            bottom: -20%;
+            right: -15%;
+            animation-duration: 26s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 50vw;
+            height: 50vw;
+            background: var(--azure-mist);
+            top: 30%;
+            left: 25%;
+            animation-duration: 19s;
+            animation-delay: -10s;
+        }
+
+        @keyframes driftBlob {
+            0% {
+                transform: translate(0px, 0px) scale(1) rotate(0deg);
+            }
+            33% {
+                transform: translate(40px, -50px) scale(1.15) rotate(45deg);
+            }
+            66% {
+                transform: translate(-30px, 40px) scale(0.9) rotate(180deg);
+            }
+            100% {
+                transform: translate(25px, 30px) scale(1.05) rotate(360deg);
+            }
+        }
+
+        /* Canvas Procedural Grain with Varying Grain Opacity & Blur Animation */
+        #grain-canvas {
             position: fixed;
             inset: 0;
             z-index: -1;
-            background-color: var(--bg-main);
-            background-image: url('grain_gradient_2.jfif'), radial-gradient(circle at 15% 15%, var(--strong-cyan) 0%, transparent 50%), radial-gradient(circle at 85% 85%, var(--stormy-teal) 0%, transparent 60%);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: background-image 0.3s ease, background-color 0.3s ease;
-        }
-
-        body.light-mode .grain-gradient-stage {
-            background-image: url('grain_gradient_1.jfif'), radial-gradient(circle at 85% 15%, var(--azure-mist) 0%, transparent 60%), radial-gradient(circle at 15% 85%, var(--strong-cyan) 0%, transparent 50%);
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            opacity: 0.5;
+            transition: opacity 0.5s ease;
         }
 
         /* ==========================================================================
@@ -244,7 +309,7 @@
         .font-hero {
             font-family: var(--font-display);
             font-variant-numeric: tabular-nums;
-            font-size: 4.6rem; /* Increased 10% */
+            font-size: 4.6rem;
         }
 
         .font-micro-label {
@@ -257,7 +322,7 @@
             font-family: var(--font-sans);
             font-style: italic;
             font-variant-numeric: tabular-nums;
-            font-size: 1rem; /* Scaled up */
+            font-size: 1rem;
         }
 
         .font-subtle {
@@ -267,8 +332,13 @@
 </head>
 <body>
 
-    <!-- Grain Gradient Stage with CSS fallback -->
-    <div class="grain-gradient-stage"></div>
+    <!-- Generative Fluid Gradient & Procedural Grain Stage -->
+    <div class="generative-stage">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <canvas id="grain-canvas"></canvas>
 
     <main class="app-shell">
         
@@ -295,7 +365,7 @@
             </button>
         </header>
 
-        <!-- Centerpiece Sol Counter & 80-Year Life Bar (10% Larger & Centered) -->
+        <!-- Centerpiece Sol Counter & 80-Year Life Bar -->
         <section class="flex flex-col items-center justify-center z-10 my-auto py-1">
             <span class="font-micro-label text-xs" style="color: var(--text-muted);">Sols</span>
             
@@ -308,7 +378,7 @@
                 <span id="earth-years-display" class="font-editorial-italic tracking-wide">0.0 Earth Years</span>
             </div>
 
-            <!-- 80-Year Life Expectancy Progress Bar (10% Larger) -->
+            <!-- 80-Year Life Expectancy Progress Bar -->
             <div class="w-full max-w-[305px] mt-5">
                 <div class="flex justify-between items-baseline mb-1.5">
                     <span class="font-subtle text-xs" style="color: var(--text-muted);">0 Yrs</span>
@@ -321,7 +391,7 @@
             </div>
         </section>
 
-        <!-- Bottom Controls & Secondary Metrics (Tighter Centered Flow) -->
+        <!-- Bottom Controls & Secondary Metrics -->
         <section class="flex flex-col gap-3 z-10 w-full">
             <!-- 3-Way Date Selector Card -->
             <div class="glass-panel p-4 sm:p-5">
@@ -361,6 +431,51 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // ==========================================================================
+            // Generative Animated Grain & Blur Loop
+            // ==========================================================================
+            const canvas = document.getElementById('grain-canvas');
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            function drawGrain() {
+                const w = canvas.width;
+                const h = canvas.height;
+                const imgData = ctx.createImageData(w, h);
+                const data = imgData.data;
+                
+                // Randomize grain intensity slightly per frame for a living film effect
+                const intensity = 18 + Math.floor(Math.random() * 10);
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const val = Math.floor(Math.random() * intensity);
+                    data[i] = val;     // R
+                    data[i + 1] = val; // G
+                    data[i + 2] = val; // B
+                    data[i + 3] = val * 1.5; // Alpha
+                }
+                ctx.putImageData(imgData, 0, 0);
+            }
+
+            function loop() {
+                drawGrain();
+                // Throttle grain frame rate slightly for smooth mobile performance
+                setTimeout(() => {
+                    animationFrameId = requestAnimationFrame(loop);
+                }, 120);
+            }
+            loop();
+
+            // ==========================================================================
+            // App Logic & State Management
+            // ==========================================================================
             const MONTHS = [
                 "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"
@@ -479,7 +594,7 @@
                     earthYearsDisplay.textContent = '0.0 Earth Years';
                     weeksDisplay.textContent = '0';
                     monthsDisplay.textContent = '0';
-                    lifePercentDisplay.textContent = '0.0%';
+                    lifePercentDisplay.textContent = '0.0%A';
                     lifeBarFill.style.width = '0%';
                     return;
                 }
