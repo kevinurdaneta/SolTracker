@@ -126,34 +126,36 @@
         }
 
         /* ==========================================================================
-           Custom Grain Gradient Background Images
+           Guaranteed Visible Grain Gradient Stage (Image + CSS Fallback)
            ========================================================================== */
         .grain-gradient-stage {
             position: fixed;
             inset: 0;
             z-index: -1;
-            background-image: url('grain_gradient_2.jfif');
+            background-color: var(--bg-main);
+            background-image: url('grain_gradient_2.jfif'), radial-gradient(circle at 15% 15%, var(--strong-cyan) 0%, transparent 50%), radial-gradient(circle at 85% 85%, var(--stormy-teal) 0%, transparent 60%);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            transition: background-image 0.3s ease;
+            transition: background-image 0.3s ease, background-color 0.3s ease;
         }
 
         body.light-mode .grain-gradient-stage {
-            background-image: url('grain_gradient_1.jfif');
+            background-image: url('grain_gradient_1.jfif'), radial-gradient(circle at 85% 15%, var(--azure-mist) 0%, transparent 60%), radial-gradient(circle at 15% 85%, var(--strong-cyan) 0%, transparent 50%);
         }
 
         /* ==========================================================================
-           iPhone Safe-Area Full-Screen Layout
+           iPhone Safe-Area Centered Layout
            ========================================================================== */
         .app-shell {
             width: 100%;
             height: 100dvh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding-top: calc(env(safe-area-inset-top, 20px) + 1.25rem);
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 1.25rem);
+            justify-content: center;
+            gap: 1.5rem;
+            padding-top: calc(env(safe-area-inset-top, 20px) + 0.5rem);
+            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 0.5rem);
             padding-left: 1.5rem;
             padding-right: 1.5rem;
             position: relative;
@@ -168,8 +170,8 @@
             .app-shell {
                 max-width: 410px;
                 height: 812px;
-                max-height: 92dvh;
-                padding: 2rem 1.75rem;
+                max-height: 94dvh;
+                padding: 1.75rem 1.75rem;
                 border-radius: 2.75rem;
                 background: rgba(0, 20, 20, 0.25);
                 backdrop-filter: blur(20px);
@@ -217,7 +219,7 @@
             color: var(--text-main);
             font-family: var(--font-sans);
             border-radius: 0.95rem;
-            padding: 0.7rem 1.75rem 0.7rem 0.8rem;
+            padding: 0.65rem 1.75rem 0.65rem 0.8rem;
             font-size: 0.925rem;
             font-weight: 500;
             width: 100%;
@@ -238,10 +240,11 @@
             border-color: var(--strong-cyan);
         }
 
-        /* Typographic Utility Classes */
+        /* Typographic Utility Classes (Enlarged by ~10%) */
         .font-hero {
             font-family: var(--font-display);
             font-variant-numeric: tabular-nums;
+            font-size: 4.6rem; /* Increased 10% */
         }
 
         .font-micro-label {
@@ -254,6 +257,7 @@
             font-family: var(--font-sans);
             font-style: italic;
             font-variant-numeric: tabular-nums;
+            font-size: 1rem; /* Scaled up */
         }
 
         .font-subtle {
@@ -263,13 +267,13 @@
 </head>
 <body>
 
-    <!-- Grain Gradient Stage (Image Backdrop) -->
+    <!-- Grain Gradient Stage with CSS fallback -->
     <div class="grain-gradient-stage"></div>
 
     <main class="app-shell">
         
         <!-- Top Navigation -->
-        <header class="flex justify-between items-center z-10">
+        <header class="flex justify-between items-center z-10 w-full">
             <!-- Top-Left: Light / Dark Theme Toggle -->
             <button id="theme-toggle" class="icon-btn" aria-label="Toggle Light/Dark Mode">
                 <svg id="icon-sun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -291,37 +295,37 @@
             </button>
         </header>
 
-        <!-- Centerpiece Sol Counter & 80-Year Life Bar -->
-        <section class="flex flex-col items-center justify-center z-10 my-auto">
+        <!-- Centerpiece Sol Counter & 80-Year Life Bar (10% Larger & Centered) -->
+        <section class="flex flex-col items-center justify-center z-10 my-auto py-1">
             <span class="font-micro-label text-xs" style="color: var(--text-muted);">Sols</span>
             
-            <h1 id="sol-display" class="font-hero text-6xl sm:text-7xl mt-1.5 tracking-tight" style="color: var(--accent-primary);">
+            <h1 id="sol-display" class="font-hero mt-1 tracking-tight" style="color: var(--accent-primary);">
                 0
             </h1>
             
-            <div class="mt-3.5 px-4 py-1.5 rounded-full border flex items-center gap-2" style="border-color: var(--border-color); background: var(--pill-bg); backdrop-filter: blur(8px);">
+            <div class="mt-2.5 px-4 py-1.5 rounded-full border flex items-center gap-2" style="border-color: var(--border-color); background: var(--pill-bg); backdrop-filter: blur(8px);">
                 <span class="w-2 h-2 rounded-full" style="background-color: var(--strong-cyan);"></span>
-                <span id="earth-years-display" class="font-editorial-italic text-sm tracking-wide">0.0 Earth Years</span>
+                <span id="earth-years-display" class="font-editorial-italic tracking-wide">0.0 Earth Years</span>
             </div>
 
-            <!-- 80-Year Life Expectancy Progress Bar -->
-            <div class="w-full max-w-[280px] mt-7">
-                <div class="flex justify-between items-baseline mb-2">
+            <!-- 80-Year Life Expectancy Progress Bar (10% Larger) -->
+            <div class="w-full max-w-[305px] mt-5">
+                <div class="flex justify-between items-baseline mb-1.5">
                     <span class="font-subtle text-xs" style="color: var(--text-muted);">0 Yrs</span>
                     <span id="life-percent-display" class="font-editorial-italic text-sm font-semibold" style="color: var(--text-main);">0.0%</span>
                     <span class="font-subtle text-xs" style="color: var(--text-muted);">80 Yrs</span>
                 </div>
-                <div class="w-full h-2.5 rounded-full overflow-hidden p-0.5" style="background: var(--select-bg); border: 1px solid var(--border-color);">
+                <div class="w-full h-3 rounded-full overflow-hidden p-0.5" style="background: var(--select-bg); border: 1px solid var(--border-color);">
                     <div id="life-bar-fill" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, var(--stormy-teal), var(--strong-cyan));"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Bottom Controls & Secondary Metrics -->
-        <section class="flex flex-col gap-3.5 z-10">
+        <!-- Bottom Controls & Secondary Metrics (Tighter Centered Flow) -->
+        <section class="flex flex-col gap-3 z-10 w-full">
             <!-- 3-Way Date Selector Card -->
             <div class="glass-panel p-4 sm:p-5">
-                <div class="flex justify-between items-center mb-3">
+                <div class="flex justify-between items-center mb-2.5">
                     <h2 class="text-xs font-micro-label" style="color: var(--text-muted);">Start Date</h2>
                     <span id="error-message" class="text-xs font-medium text-red-400 hidden">Future date invalid</span>
                 </div>
@@ -340,15 +344,15 @@
             </div>
 
             <!-- Total Weeks & Total Months Cards -->
-            <div class="grid grid-cols-2 gap-3.5">
+            <div class="grid grid-cols-2 gap-3">
                 <div class="glass-panel p-4 sm:p-5 flex flex-col justify-between">
                     <span class="font-subtle text-xs" style="color: var(--text-muted);">Total Weeks</span>
-                    <span id="weeks-display" class="font-hero text-2xl sm:text-3xl mt-1.5" style="color: var(--accent-primary);">0</span>
+                    <span id="weeks-display" class="font-hero text-2xl sm:text-3xl mt-1" style="color: var(--accent-primary);">0</span>
                 </div>
                 
                 <div class="glass-panel p-4 sm:p-5 flex flex-col justify-between">
                     <span class="font-subtle text-xs" style="color: var(--text-muted);">Total Months</span>
-                    <span id="months-display" class="font-hero text-2xl sm:text-3xl mt-1.5" style="color: var(--accent-primary);">0</span>
+                    <span id="months-display" class="font-hero text-2xl sm:text-3xl mt-1" style="color: var(--accent-primary);">0</span>
                 </div>
             </div>
         </section>
